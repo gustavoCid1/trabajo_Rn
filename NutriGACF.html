@@ -1,3 +1,1416 @@
 <!DOCTYPE html>
 <html lang="es">
-</html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriGACF - Sistema Clinico</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* === RESET BASICO === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* === VARIABLES DE COLOR (azul y blanco) === */
+:root {
+  --azul-oscuro:  #1a3a5c;
+  --azul:         #1e5fa8;
+  --azul-medio:   #2d7dd2;
+  --azul-claro:   #dbeafe;
+  --azul-muy-claro: #eff6ff;
+  --blanco:       #ffffff;
+  --gris-fondo:   #f0f4f8;
+  --gris-borde:   #c8d6e8;
+  --gris-texto:   #4a5568;
+  --gris-muted:   #90a4ae;
+  --rojo:         #c0392b;
+  --rojo-claro:   #fde8e8;
+  --verde:        #1a7a4a;
+  --verde-claro:  #d4f0e0;
+  --texto:        #1e2a38;
+  --sidebar-w:    245px;
+  --topbar-h:     55px;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--gris-fondo);
+  color: var(--texto);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ============================================================
+   VISTAS PRINCIPALES
+   ============================================================ */
+.vista { display: none; min-height: 100vh; }
+.vista.activa { display: flex; }
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+#vistaLogin {
+  background: linear-gradient(135deg, #1a3a5c 0%, #1e5fa8 60%, #2d7dd2 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.login-card {
+  background: var(--blanco);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  padding: 2.5rem 2rem;
+  /* sombra simple de estudiante */
+  box-shadow: 0 8px 30px rgba(30, 58, 92, 0.25);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-logo .circulo {
+  width: 60px;
+  height: 60px;
+  background: var(--azul);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.login-logo h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+}
+
+.login-logo p {
+  font-size: 11px;
+  color: var(--gris-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+
+.linea { height: 1px; background: var(--gris-borde); margin: 1.5rem 0; }
+
+.login-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--texto);
+  margin-bottom: 5px;
+}
+
+.login-card .sub {
+  font-size: 12px;
+  color: var(--gris-muted);
+  margin-bottom: 1.25rem;
+}
+
+/* campos de formulario */
+.campo { margin-bottom: 1rem; }
+
+.campo label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: 7px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--texto);
+  background: var(--blanco);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  border-color: var(--azul-medio);
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: #b0bec5;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 78px;
+  line-height: 1.55;
+}
+
+.btn-acceso {
+  width: 100%;
+  padding: 11px;
+  background: var(--azul);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.25rem;
+}
+.btn-acceso:hover { background: var(--azul-oscuro); }
+
+.nota-seg {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 11px;
+  color: var(--gris-muted);
+}
+
+.nota-pie {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 10.5px;
+  color: var(--gris-muted);
+  border-top: 1px solid var(--gris-borde);
+  padding-top: 1rem;
+}
+
+/* error de login */
+.error-caja {
+  display: none;
+  background: var(--rojo-claro);
+  color: var(--rojo);
+  border: 1px solid #f5c6c6;
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 12px;
+  margin-bottom: 1rem;
+}
+.error-caja.show { display: block; }
+
+/* ============================================================
+   PANEL PRINCIPAL
+   ============================================================ */
+#vistaPanel { flex-direction: column; }
+
+/* topbar */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: var(--topbar-h);
+  background: var(--azul-oscuro);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  /* sin box-shadow complicado, borde simple */
+  border-bottom: 2px solid var(--azul-medio);
+}
+
+.tb-izq { display: flex; align-items: center; gap: 10px; }
+
+.tb-circulo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--azul-medio);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tb-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.tb-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  margin-left: 3px;
+}
+
+.tb-der { display: flex; align-items: center; gap: 8px; }
+
+.pill-user {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 4px 13px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #fff;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-salir {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 7px;
+  padding: 5px 13px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.btn-salir:hover { background: rgba(192,57,43,0.7); border-color: rgba(192,57,43,0.8); }
+
+/* layout */
+.layout {
+  display: flex;
+  margin-top: var(--topbar-h);
+  flex: 1;
+  min-height: calc(100vh - var(--topbar-h));
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  position: fixed;
+  top: var(--topbar-h);
+  bottom: 0;
+  left: 0;
+  background: var(--blanco);
+  border-right: 1px solid var(--gris-borde);
+  overflow-y: auto;
+  padding: 1rem 0.85rem;
+}
+
+.sb-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gris-muted);
+  padding: 0 6px;
+  margin-bottom: 6px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gris-texto);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 2px;
+  transition: all 0.15s;
+}
+.nav-btn:hover { background: var(--azul-muy-claro); color: var(--azul); }
+.nav-btn.activo { background: var(--azul-claro); color: var(--azul); font-weight: 600; }
+
+.nav-punto {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gris-borde);
+  flex-shrink: 0;
+}
+.nav-btn.activo .nav-punto { background: var(--azul); }
+
+.sb-sep { height: 1px; background: var(--gris-borde); margin: 10px 0; }
+
+.pac-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border-radius: 7px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: var(--gris-texto);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.pac-item:hover { background: var(--azul-muy-claro); color: var(--azul); }
+.pac-item.sel { background: var(--azul-claro); color: var(--azul); font-weight: 600; }
+
+.pac-av {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--azul-claro);
+  color: var(--azul);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.vacio-sb {
+  font-size: 11.5px;
+  color: var(--gris-muted);
+  padding: 6px 8px;
+  font-style: italic;
+}
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 1.5rem 1.75rem;
+  max-width: 950px;
+}
+
+.sec { display: none; }
+.sec.activa { display: block; }
+
+.sec-hdr { margin-bottom: 1.25rem; }
+.sec-hdr h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+}
+.sec-hdr p {
+  font-size: 12px;
+  color: var(--gris-muted);
+  margin-top: 3px;
+}
+
+/* tarjetas */
+.card {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  /* sin sombra exagerada, estilo sencillo */
+  box-shadow: 0 1px 4px rgba(30,58,92,0.07);
+}
+
+.card-titulo {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--gris-muted);
+  margin-bottom: 0.85rem;
+  /* separacion simple */
+  border-bottom: 1px solid var(--gris-borde);
+  padding-bottom: 7px;
+}
+
+/* grid de 2 columnas */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+@media(max-width: 560px){ .g2 { grid-template-columns: 1fr; } }
+
+/* estadisticas dashboard */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-top: 3px solid var(--azul);
+  border-radius: 9px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(30,58,92,0.06);
+}
+
+.stat-val {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+  line-height: 1;
+}
+
+.stat-lbl {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gris-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 5px;
+}
+
+/* IMC */
+.imc-box {
+  display: none;
+  background: var(--azul-muy-claro);
+  border: 1px solid var(--azul-claro);
+  border-radius: 9px;
+  padding: 1rem 1.25rem;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.imc-num {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.imc-lbl { font-size: 14px; font-weight: 600; }
+.imc-sub { font-size: 11px; color: var(--gris-muted); margin-top: 3px; }
+
+.c-bajo   { color: #1565c0; }
+.c-normal { color: #1a7a4a; }
+.c-sobre  { color: #e65100; }
+.c-obeso  { color: var(--rojo); }
+
+/* botones */
+.btn {
+  padding: 9px 18px;
+  border-radius: 7px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s;
+}
+.btn-p { background: var(--azul); color: #fff; }
+.btn-p:hover { background: var(--azul-oscuro); }
+.btn-s {
+  background: var(--blanco);
+  color: var(--gris-texto);
+  border: 1.5px solid var(--gris-borde);
+}
+.btn-s:hover { background: var(--azul-muy-claro); color: var(--azul); border-color: var(--azul-claro); }
+.btn-peligro { background: var(--rojo-claro); color: var(--rojo); border: 1.5px solid #f5c6c6; }
+.btn-peligro:hover { background: var(--rojo); color: #fff; }
+.btn-bloque { width: 100%; margin-top: 0.5rem; }
+.btn-sm { padding: 5px 11px; font-size: 11px; }
+
+/* alertas dentro del formulario */
+.alerta {
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 12.5px;
+  margin-bottom: 0.85rem;
+  display: none;
+  line-height: 1.5;
+}
+.alerta.show { display: block; }
+.alerta-err  { background: var(--rojo-claro); color: var(--rojo); border: 1px solid #f5c6c6; }
+.alerta-info { background: var(--azul-muy-claro); color: var(--azul); border: 1px solid var(--azul-claro); }
+
+/* historial de consultas */
+.consulta-card {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-left: 3px solid var(--azul-medio);
+  border-radius: 9px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.65rem;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(30,58,92,0.06);
+}
+
+.con-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.con-fecha {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--azul);
+  background: var(--azul-claro);
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+
+.con-hora {
+  font-size: 11px;
+  color: var(--gris-muted);
+  background: var(--gris-fondo);
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--gris-borde);
+}
+
+.con-doc {
+  font-size: 11px;
+  color: var(--azul-oscuro);
+  background: var(--azul-muy-claro);
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--azul-claro);
+}
+
+.badge-reciente {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  background: var(--azul);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.btn-borrar-consulta {
+  position: absolute;
+  bottom: 9px;
+  right: 10px;
+  background: var(--rojo-claro);
+  color: var(--rojo);
+  border: 1px solid #f5c6c6;
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-borrar-consulta:hover { background: var(--rojo); color: #fff; }
+
+.con-sec { margin-bottom: 0.65rem; }
+
+.con-sec-ttl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--gris-muted);
+  margin-bottom: 3px;
+}
+
+.con-sec-body {
+  font-size: 12.5px;
+  color: var(--texto);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.sin-hist {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--gris-muted);
+  font-size: 12.5px;
+  font-style: italic;
+  background: var(--azul-muy-claro);
+  border: 1px dashed var(--gris-borde);
+  border-radius: 8px;
+}
+
+/* toast de confirmacion */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: var(--azul-oscuro);
+  color: #fff;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-size: 12.5px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(26,58,92,0.3);
+  transform: translateY(70px);
+  opacity: 0;
+  transition: all 0.3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* modal de confirmacion para borrar */
+.modal-fondo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,58,92,0.45);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-fondo.show { display: flex; }
+
+.modal-caja {
+  background: var(--blanco);
+  border-radius: 10px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(26,58,92,0.2);
+}
+
+.modal-caja h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+  margin-bottom: 8px;
+}
+
+.modal-caja p {
+  font-size: 13px;
+  color: var(--gris-texto);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.modal-botones {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     MODAL DE CONFIRMACION PARA BORRAR
+     ============================================================ -->
+<div class="modal-fondo" id="modalBorrar">
+  <div class="modal-caja">
+    <h3>Confirmar eliminacion</h3>
+    <p id="modalMensaje">Esta accion no se puede deshacer.</p>
+    <div class="modal-botones">
+      <button class="btn btn-s" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-peligro" id="modalConfirmar">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     VISTA: LOGIN
+     ============================================================ -->
+<div class="vista activa" id="vistaLogin">
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div class="circulo">N</div>
+      <h1>NutriGACF</h1>
+      <p>Sistema Clinico Nutricional</p>
+    </div>
+
+    <div class="linea"></div>
+
+    <h2>Acceso del nutriologo</h2>
+    <p class="sub">Ingresa tu nombre para firmar tu entrada a la sesion clinica del dia.</p>
+
+    <div class="error-caja" id="loginError">Por favor ingresa tu nombre para continuar.</div>
+
+    <div class="campo">
+      <label for="inputNombre">Nombre del nutriologo</label>
+      <input type="text" id="inputNombre" placeholder="Ej. Dra. Ana Garcia Cruz Fuentes" autocomplete="off">
+    </div>
+
+    <button class="btn-acceso" onclick="iniciarSesion()">Firmar entrada al sistema</button>
+
+    <p class="nota-seg">Sesion local — sin base de datos en servidor</p>
+
+    <p class="nota-pie">PRACTICA 1 — UNIDAD 2 — Control de Versiones — NutriGACF</p>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     VISTA: PANEL
+     ============================================================ -->
+<div class="vista" id="vistaPanel">
+
+  <!-- BARRA SUPERIOR -->
+  <header class="topbar">
+    <div class="tb-izq">
+      <div class="tb-circulo">N</div>
+      <span class="tb-titulo">NutriGACF</span>
+      <span class="tb-sub">Sistema Clinico</span>
+    </div>
+    <div class="tb-der">
+      <span class="pill-user" id="pillUsuario"></span>
+      <button class="btn-salir" onclick="cerrarSesion()">Cerrar sesion</button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+      <p class="sb-lbl">Menu principal</p>
+
+      <button class="nav-btn activo" id="nb-dashboard" onclick="irA('dashboard')">
+        <span class="nav-punto"></span>
+        Panel general
+      </button>
+      <button class="nav-btn" id="nb-registro" onclick="irA('registro')">
+        <span class="nav-punto"></span>
+        Nuevo paciente
+      </button>
+      <button class="nav-btn" id="nb-consulta" onclick="irA('consulta')">
+        <span class="nav-punto"></span>
+        Nueva consulta
+      </button>
+
+      <div class="sb-sep"></div>
+      <p class="sb-lbl">Pacientes registrados</p>
+      <div id="listaSidebar">
+        <p class="vacio-sb">Sin pacientes aun</p>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main">
+
+      <!-- ========== DASHBOARD ========== -->
+      <div class="sec activa" id="sec-dashboard">
+        <div class="sec-hdr">
+          <h2>Panel general</h2>
+          <p id="fechaHoy">Cargando fecha...</p>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-val" id="st-pac">0</div>
+            <div class="stat-lbl">Pacientes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="st-con">0</div>
+            <div class="stat-lbl">Consultas totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" id="st-hoy">0</div>
+            <div class="stat-lbl">Consultas hoy</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-titulo">Acciones rapidas</div>
+          <div class="g2">
+            <button class="btn btn-p" onclick="irA('registro')">Registrar paciente</button>
+            <button class="btn btn-s" onclick="irA('consulta')">Nueva consulta</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-titulo">Acerca del sistema</div>
+          <p style="font-size:13px;color:var(--gris-texto);line-height:1.8">
+            <strong style="color:var(--azul-oscuro)">NutriGACF</strong> es un sistema web clinico local
+            para el personal de la clinica de nutricion. Permite registrar pacientes con calculo automatico
+            de IMC y diagnostico, gestionar el historial de consultas de forma cronologica en tiempo real,
+            y cuenta con acceso seguro por firma de sesion.<br><br>
+            <span style="font-size:11px;color:var(--gris-muted)">PRACTICA 1 — UNIDAD 2 — Control de Versiones</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- ========== REGISTRO ========== -->
+      <div class="sec" id="sec-registro">
+        <div class="sec-hdr">
+          <h2>Registro de paciente</h2>
+          <p>Preregistro antropometrico — los datos quedan disponibles para futuras consultas sin recapturarlos.</p>
+        </div>
+
+        <div class="alerta alerta-err" id="alertReg"></div>
+
+        <div class="card">
+          <div class="card-titulo">Datos personales</div>
+          <div class="g2">
+            <div class="campo">
+              <label>Nombre completo *</label>
+              <input type="text" id="rNombre" placeholder="Ana Torres Gomez">
+            </div>
+            <div class="campo">
+              <label>Edad *</label>
+              <input type="number" id="rEdad" placeholder="28" min="1" max="120">
+            </div>
+          </div>
+          <div class="g2">
+            <div class="campo">
+              <label>Sexo</label>
+              <select id="rSexo">
+                <option>Femenino</option>
+                <option>Masculino</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label>Telefono</label>
+              <input type="tel" id="rTel" placeholder="55 1234 5678">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-titulo">Datos antropometricos</div>
+          <div class="g2">
+            <div class="campo">
+              <label>Peso (kg) *</label>
+              <input type="number" id="rPeso" placeholder="70.5" step="0.1" min="1" oninput="calcIMC()">
+            </div>
+            <div class="campo">
+              <label>Talla (cm) *</label>
+              <input type="number" id="rTalla" placeholder="165" step="0.1" min="1" oninput="calcIMC()">
+            </div>
+          </div>
+
+          <!-- resultado IMC en tiempo real -->
+          <div class="imc-box" id="imcBox">
+            <div>
+              <div class="imc-num" id="imcNum">--</div>
+            </div>
+            <div>
+              <div class="imc-lbl" id="imcDiag">--</div>
+              <div class="imc-sub" id="imcRango"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-titulo">Notas iniciales (opcional)</div>
+          <div class="campo" style="margin-bottom:0">
+            <textarea id="rNotas" placeholder="Antecedentes relevantes, motivo de consulta inicial, alergias alimentarias..."></textarea>
+          </div>
+        </div>
+
+        <button class="btn btn-p btn-bloque" onclick="guardarPaciente()">Guardar paciente</button>
+      </div>
+
+      <!-- ========== CONSULTA ========== -->
+      <div class="sec" id="sec-consulta">
+        <div class="sec-hdr">
+          <h2>Nueva consulta</h2>
+          <p>Selecciona un paciente de la barra lateral y registra la consulta del dia.</p>
+        </div>
+
+        <div class="alerta alerta-info show" id="alertSelec">
+          Selecciona un paciente de la lista lateral para comenzar.
+        </div>
+
+        <div id="formConsulta" style="display:none">
+
+          <!-- ficha del paciente -->
+          <div class="card">
+            <div class="card-titulo">Ficha del paciente</div>
+            <div id="fichaDiv"></div>
+          </div>
+
+          <!-- formulario de consulta -->
+          <div class="card">
+            <div class="card-titulo">Datos de la consulta del dia</div>
+            <div class="g2">
+              <div class="campo">
+                <label>Fecha</label>
+                <input type="date" id="cFecha">
+              </div>
+              <div class="campo">
+                <label>Hora exacta</label>
+                <input type="time" id="cHora">
+              </div>
+            </div>
+            <div class="campo">
+              <label>Evolucion del paciente *</label>
+              <textarea id="cEvolucion" placeholder="Cambios fisicos, animicos, adherencia al plan anterior, peso actual en consulta..."></textarea>
+            </div>
+            <div class="campo" style="margin-bottom:0">
+              <label>Plan de alimentacion *</label>
+              <textarea id="cPlan" placeholder="Distribucion de macronutrientes, horarios de comida, alimentos permitidos y restringidos..."></textarea>
+            </div>
+          </div>
+
+          <div class="alerta alerta-err" id="alertCon"></div>
+          <button class="btn btn-p btn-bloque" onclick="guardarConsulta()">Registrar consulta</button>
+
+          <!-- historial -->
+          <div style="margin-top:1.75rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem">
+              <div>
+                <h2 style="font-size:19px;font-weight:700;color:var(--azul-oscuro)">Historial clinico</h2>
+                <p id="histSub" style="font-size:12px;color:var(--gris-muted);margin-top:2px"></p>
+              </div>
+              <!-- boton para borrar TODAS las consultas del paciente -->
+              <button class="btn btn-peligro btn-sm" id="btnBorrarTodas" style="display:none" onclick="pedirBorrarTodas()">
+                Borrar todas las consultas
+              </button>
+            </div>
+            <div id="historialDiv"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+var usuario        = '';
+var pacienteActivo = null;
+
+// callback que se ejecuta cuando el usuario confirma en el modal
+var _accionPendiente = null;
+
+/* ============================================================
+   ALMACENAMIENTO LOCAL
+   ============================================================ */
+function getPacs() { return JSON.parse(localStorage.getItem('gacf_pacientes') || '[]'); }
+function setPacs(d) { localStorage.setItem('gacf_pacientes', JSON.stringify(d)); }
+function getCons() { return JSON.parse(localStorage.getItem('gacf_consultas') || '[]'); }
+function setCons(d) { localStorage.setItem('gacf_consultas', JSON.stringify(d)); }
+
+/* ============================================================
+   LOGIN / SESION
+   ============================================================ */
+function iniciarSesion() {
+  var nombre = document.getElementById('inputNombre').value.trim();
+  if (!nombre) {
+    document.getElementById('loginError').classList.add('show');
+    return;
+  }
+  document.getElementById('loginError').classList.remove('show');
+  usuario = nombre;
+  sessionStorage.setItem('gacf_auth', '1');
+  sessionStorage.setItem('gacf_user', nombre);
+  document.getElementById('pillUsuario').textContent = nombre;
+  document.getElementById('vistaLogin').classList.remove('activa');
+  document.getElementById('vistaPanel').classList.add('activa');
+  inicializarPanel();
+}
+
+function cerrarSesion() {
+  sessionStorage.removeItem('gacf_auth');
+  sessionStorage.removeItem('gacf_user');
+  usuario        = '';
+  pacienteActivo = null;
+  document.getElementById('inputNombre').value           = '';
+  document.getElementById('formConsulta').style.display  = 'none';
+  document.getElementById('alertSelec').classList.add('show');
+  document.getElementById('vistaPanel').classList.remove('activa');
+  document.getElementById('vistaLogin').classList.add('activa');
+}
+
+// verificar sesion al cargar la pagina
+window.addEventListener('DOMContentLoaded', function() {
+  if (sessionStorage.getItem('gacf_auth')) {
+    usuario = sessionStorage.getItem('gacf_user') || 'Nutriologo';
+    document.getElementById('pillUsuario').textContent = usuario;
+    document.getElementById('vistaLogin').classList.remove('activa');
+    document.getElementById('vistaPanel').classList.add('activa');
+    inicializarPanel();
+  }
+  // permitir enter en el login
+  document.getElementById('inputNombre').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') iniciarSesion();
+  });
+});
+
+/* ============================================================
+   INICIALIZAR PANEL
+   ============================================================ */
+function inicializarPanel() {
+  var hoy = new Date();
+  document.getElementById('fechaHoy').textContent =
+    hoy.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  renderSidebar();
+  actualizarStats();
+  irA('dashboard');
+}
+
+/* ============================================================
+   NAVEGACION
+   ============================================================ */
+function irA(sec) {
+  document.querySelectorAll('.sec').forEach(function(s) { s.classList.remove('activa'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('activo'); });
+  document.getElementById('sec-' + sec).classList.add('activa');
+  var nb = document.getElementById('nb-' + sec);
+  if (nb) nb.classList.add('activo');
+  if (sec === 'dashboard') actualizarStats();
+}
+
+/* ============================================================
+   ESTADISTICAS DEL DASHBOARD
+   ============================================================ */
+function actualizarStats() {
+  var p   = getPacs();
+  var c   = getCons();
+  var hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('st-pac').textContent = p.length;
+  document.getElementById('st-con').textContent = c.length;
+  document.getElementById('st-hoy').textContent = c.filter(function(x) { return x.fecha === hoy; }).length;
+}
+
+/* ============================================================
+   CALCULO DEL IMC EN TIEMPO REAL
+   ============================================================ */
+function calcIMC() {
+  var peso  = parseFloat(document.getElementById('rPeso').value);
+  var talla = parseFloat(document.getElementById('rTalla').value) / 100;
+  if (!peso || !talla || talla <= 0) return;
+  var imc  = peso / (talla * talla);
+  var info = imcInfo(imc);
+
+  document.getElementById('imcBox').style.display = 'flex';
+  var numEl = document.getElementById('imcNum');
+  numEl.textContent = imc.toFixed(1);
+  numEl.className   = 'imc-num ' + info.cls;
+  document.getElementById('imcDiag').textContent  = info.diag;
+  document.getElementById('imcRango').textContent = info.rango;
+}
+
+// clasificacion de IMC segun OMS
+function imcInfo(imc) {
+  if (imc < 18.5) return { cls: 'c-bajo',   diag: 'Bajo peso',   rango: 'IMC menor a 18.5' };
+  if (imc < 25)   return { cls: 'c-normal',  diag: 'Peso normal', rango: 'IMC 18.5 a 24.9' };
+  if (imc < 30)   return { cls: 'c-sobre',   diag: 'Sobrepeso',   rango: 'IMC 25.0 a 29.9' };
+  return               { cls: 'c-obeso',   diag: 'Obesidad',    rango: 'IMC igual o mayor a 30.0' };
+}
+
+function colorDiag(diag) {
+  if (diag === 'Bajo peso')   return '#1565c0';
+  if (diag === 'Peso normal') return '#1a7a4a';
+  if (diag === 'Sobrepeso')   return '#e65100';
+  return 'var(--rojo)';
+}
+
+/* ============================================================
+   GUARDAR PACIENTE
+   ============================================================ */
+function guardarPaciente() {
+  var nombre = document.getElementById('rNombre').value.trim();
+  var edad   = document.getElementById('rEdad').value.trim();
+  var peso   = parseFloat(document.getElementById('rPeso').value);
+  var talla  = parseFloat(document.getElementById('rTalla').value);
+  var alerta = document.getElementById('alertReg');
+
+  // validacion de campos obligatorios
+  if (!nombre || !edad || !peso || !talla) {
+    alerta.textContent = 'Completa los campos obligatorios: nombre, edad, peso y talla.';
+    alerta.classList.add('show');
+    return;
+  }
+
+  // verificar que no haya duplicados
+  var todos = getPacs();
+  if (todos.find(function(x) { return x.nombre.toLowerCase() === nombre.toLowerCase(); })) {
+    alerta.textContent = 'Ya existe un paciente con ese nombre registrado.';
+    alerta.classList.add('show');
+    return;
+  }
+
+  alerta.classList.remove('show');
+
+  var imc      = peso / Math.pow(talla / 100, 2);
+  var info     = imcInfo(imc);
+
+  todos.push({
+    id:          'p_' + Date.now(),
+    nombre:      nombre,
+    edad:        edad,
+    sexo:        document.getElementById('rSexo').value,
+    tel:         document.getElementById('rTel').value,
+    peso:        peso,
+    talla:       talla,
+    imc:         +imc.toFixed(1),
+    diagnostico: info.diag,
+    notas:       document.getElementById('rNotas').value,
+    fechaReg:    new Date().toISOString()
+  });
+
+  setPacs(todos);
+
+  // limpiar formulario
+  ['rNombre','rEdad','rTel','rPeso','rTalla','rNotas'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('imcBox').style.display = 'none';
+
+  renderSidebar();
+  actualizarStats();
+  toast('Paciente ' + nombre + ' registrado correctamente');
+}
+
+/* ============================================================
+   RENDERIZAR LISTA DE PACIENTES EN EL SIDEBAR
+   ============================================================ */
+function renderSidebar() {
+  var cont  = document.getElementById('listaSidebar');
+  var lista = getPacs();
+
+  if (!lista.length) {
+    cont.innerHTML = '<p class="vacio-sb">Sin pacientes registrados</p>';
+    return;
+  }
+
+  cont.innerHTML = lista.map(function(p) {
+    var seleccionado = pacienteActivo && pacienteActivo.id === p.id;
+    return '<button class="pac-item' + (seleccionado ? ' sel' : '') + '" onclick="selPaciente(\'' + p.id + '\')">' +
+             '<div class="pac-av">' + iniciales(p.nombre) + '</div>' +
+             '<div style="min-width:0">' +
+               '<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.nombre) + '</div>' +
+               '<div style="font-size:10.5px;color:var(--gris-muted)">' + esc(p.diagnostico) + '</div>' +
+             '</div>' +
+           '</button>';
+  }).join('');
+}
+
+function iniciales(nombre) {
+  return nombre.split(' ').slice(0, 2).map(function(w) { return w[0]; }).join('').toUpperCase();
+}
+
+/* ============================================================
+   SELECCIONAR PACIENTE Y MOSTRAR FORMULARIO
+   ============================================================ */
+function selPaciente(id) {
+  pacienteActivo = getPacs().find(function(p) { return p.id === id; });
+  renderSidebar();
+  irA('consulta');
+
+  document.getElementById('alertSelec').style.display = 'none';
+  document.getElementById('formConsulta').style.display = 'block';
+
+  var p = pacienteActivo;
+
+  // mostrar ficha resumida del paciente
+  document.getElementById('fichaDiv').innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px">' +
+      '<div>' +
+        '<div style="font-size:10px;text-transform:uppercase;font-weight:700;color:var(--gris-muted);letter-spacing:0.4px">Paciente</div>' +
+        '<div style="font-size:13.5px;font-weight:600;margin-top:3px">' + esc(p.nombre) + '</div>' +
+      '</div>' +
+      '<div>' +
+        '<div style="font-size:10px;text-transform:uppercase;font-weight:700;color:var(--gris-muted);letter-spacing:0.4px">Edad</div>' +
+        '<div style="font-size:13.5px;font-weight:600;margin-top:3px">' + esc(p.edad) + ' anios — ' + esc(p.sexo) + '</div>' +
+      '</div>' +
+      '<div>' +
+        '<div style="font-size:10px;text-transform:uppercase;font-weight:700;color:var(--gris-muted);letter-spacing:0.4px">Peso / Talla</div>' +
+        '<div style="font-size:13.5px;font-weight:600;margin-top:3px">' + p.peso + ' kg — ' + p.talla + ' cm</div>' +
+      '</div>' +
+      '<div>' +
+        '<div style="font-size:10px;text-transform:uppercase;font-weight:700;color:var(--gris-muted);letter-spacing:0.4px">IMC</div>' +
+        '<div style="font-size:13.5px;font-weight:600;margin-top:3px">' + p.imc + ' — <span style="color:' + colorDiag(p.diagnostico) + '">' + esc(p.diagnostico) + '</span></div>' +
+      '</div>' +
+    '</div>' +
+    (p.notas
+      ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--gris-borde);font-size:12px;color:var(--gris-muted)">' +
+          '<strong style="color:var(--texto)">Notas: </strong>' + esc(p.notas) + '</div>'
+      : '');
+
+  // rellenar fecha y hora actuales
+  var now = new Date();
+  document.getElementById('cFecha').value = now.toISOString().split('T')[0];
+  document.getElementById('cHora').value  = now.toTimeString().slice(0, 5);
+
+  renderHistorial(id);
+}
+
+/* ============================================================
+   GUARDAR CONSULTA
+   ============================================================ */
+function guardarConsulta() {
+  if (!pacienteActivo) return;
+
+  var evolucion = document.getElementById('cEvolucion').value.trim();
+  var plan      = document.getElementById('cPlan').value.trim();
+  var alerta    = document.getElementById('alertCon');
+
+  if (!evolucion || !plan) {
+    alerta.textContent = 'Completa la evolucion del paciente y el plan de alimentacion antes de guardar.';
+    alerta.classList.add('show');
+    return;
+  }
+  alerta.classList.remove('show');
+
+  var todas = getCons();
+  todas.push({
+    id:         'c_' + Date.now(),
+    pacienteId: pacienteActivo.id,
+    fecha:      document.getElementById('cFecha').value,
+    hora:       document.getElementById('cHora').value,
+    evolucion:  evolucion,
+    plan:       plan,
+    nutriologo: usuario,
+    ts:         Date.now()
+  });
+  setCons(todas);
+
+  document.getElementById('cEvolucion').value = '';
+  document.getElementById('cPlan').value      = '';
+
+  actualizarStats();
+  renderHistorial(pacienteActivo.id);
+  toast('Consulta registrada correctamente');
+}
+
+/* ============================================================
+   RENDERIZAR HISTORIAL DEL PACIENTE ACTIVO
+   ============================================================ */
+function renderHistorial(pacienteId) {
+  var cont = document.getElementById('historialDiv');
+  var sub  = document.getElementById('histSub');
+  var btnT = document.getElementById('btnBorrarTodas');
+
+  // filtrar y ordenar: mas reciente primero
+  var cons = getCons()
+    .filter(function(c) { return c.pacienteId === pacienteId; })
+    .sort(function(a, b) { return b.ts - a.ts; });
+
+  if (cons.length) {
+    sub.textContent = cons.length + ' consulta' + (cons.length > 1 ? 's' : '') + ' registrada' + (cons.length > 1 ? 's' : '');
+    btnT.style.display = 'inline-block';
+  } else {
+    sub.textContent    = '';
+    btnT.style.display = 'none';
+  }
+
+  if (!cons.length) {
+    cont.innerHTML = '<div class="sin-hist">Sin consultas registradas para este paciente aun.</div>';
+    return;
+  }
+
+  cont.innerHTML = cons.map(function(c, i) {
+    return '<div class="consulta-card">' +
+      (i === 0 ? '<span class="badge-reciente">Mas reciente</span>' : '') +
+      '<div class="con-meta">' +
+        '<span class="con-fecha">' + formatearFecha(c.fecha) + '</span>' +
+        '<span class="con-hora">' + esc(c.hora) + ' h</span>' +
+        '<span class="con-doc">' + esc(c.nutriologo) + '</span>' +
+      '</div>' +
+      '<div class="con-sec">' +
+        '<div class="con-sec-ttl">Evolucion del paciente</div>' +
+        '<div class="con-sec-body">' + esc(c.evolucion) + '</div>' +
+      '</div>' +
+      '<div class="con-sec" style="margin-bottom:1.5rem">' +
+        '<div class="con-sec-ttl">Plan de alimentacion</div>' +
+        '<div class="con-sec-body">' + esc(c.plan) + '</div>' +
+      '</div>' +
+      // boton para borrar ESTA consulta especifica
+      '<button class="btn-borrar-consulta" onclick="pedirBorrarUna(\'' + c.id + '\')">' +
+        'Borrar esta consulta' +
+      '</button>' +
+    '</div>';
+  }).join('');
+}
+
+/* ============================================================
+   ELIMINAR CONSULTAS
+   ============================================================ */
+// borrar una consulta especifica
+function pedirBorrarUna(consultaId) {
+  document.getElementById('modalMensaje').textContent =
+    'Esta accion eliminara esta consulta del historial. No se puede deshacer.';
+  _accionPendiente = function() {
+    var todas = getCons().filter(function(c) { return c.id !== consultaId; });
+    setCons(todas);
+    actualizarStats();
+    renderHistorial(pacienteActivo.id);
+    toast('Consulta eliminada');
+  };
+  document.getElementById('modalBorrar').classList.add('show');
+  document.getElementById('modalConfirmar').onclick = function() {
+    cerrarModal();
+    if (_accionPendiente) _accionPendiente();
+  };
+}
+
+// borrar TODAS las consultas del paciente activo
+function pedirBorrarTodas() {
+  if (!pacienteActivo) return;
+  document.getElementById('modalMensaje').textContent =
+    'Esta accion eliminara TODAS las consultas de ' + pacienteActivo.nombre + '. Esta operacion no se puede deshacer.';
+  _accionPendiente = function() {
+    var todas = getCons().filter(function(c) { return c.pacienteId !== pacienteActivo.id; });
+    setCons(todas);
+    actualizarStats();
+    renderHistorial(pacienteActivo.id);
+    toast('Todas las consultas eliminadas');
+  };
+  document.getElementById('modalBorrar').classList.add('show');
+  document.getElementById('modalConfirmar').onclick = function() {
+    cerrarModal();
+    if (_accionPendiente) _accionPendiente();
+  };
+}
+
+function cerrarModal() {
+  document.getElementById('modalBorrar').classList.remove('show');
+  _accionPendiente = null;
+}
+
+// cerrar modal al hacer clic en el fondo
+document.getElementById('modalBorrar').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModal();
+});
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+function formatearFecha(iso) {
+  if (!iso) return '';
+  var partes = iso.split('-');
+  var y = partes[0], m = parseInt(partes[1]), d = parseInt(partes[2]);
+  var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return d + ' ' + meses[m - 1] + ' ' + y;
+}
+
+// escapar caracteres especiales para evitar XSS
+function esc(s) {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// notificacion temporal
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2800);
+}
+</script>
+</body>
+</html>git add .
