@@ -268,6 +268,13 @@ body {
 
 .sb-sep { height: 1px; background: var(--gris-borde); margin: 10px 0; }
 
+.pac-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
 .pac-item {
   display: flex;
   align-items: center;
@@ -280,10 +287,10 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   text-align: left;
   transition: all 0.15s;
-  margin-bottom: 2px;
 }
 .pac-item:hover { background: var(--azul-muy-claro); color: var(--azul); }
 .pac-item.sel   { background: var(--azul-claro); color: var(--azul); font-weight: 600; }
@@ -300,6 +307,42 @@ body {
   font-weight: 700;
   flex-shrink: 0;
 }
+
+.pac-del {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  background: var(--rojo-claro);
+  color: var(--rojo);
+  border: 1px solid #f5c6c6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.pac-del:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
+
+.btn-borrar-todos-pac {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 6px 9px;
+  margin-bottom: 6px;
+  background: var(--rojo-claro);
+  color: var(--rojo);
+  border: 1px solid #f5c6c6;
+  border-radius: 7px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-borrar-todos-pac:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
 
 .vacio-sb { font-size: 11.5px; color: var(--gris-muted); padding: 6px 8px; font-style: italic; }
 
@@ -965,16 +1008,23 @@ function renderSidebar() {
     return;
   }
 
-  cont.innerHTML = lista.map(function(p) {
+  var html = '<button class="btn-borrar-todos-pac" onclick="pedirBorrarTodosPac()">&#128465; Borrar todos los pacientes</button>';
+
+  html += lista.map(function(p) {
     var sel = pacienteActivo && pacienteActivo.id === p.id;
-    return '<button class="pac-item' + (sel ? ' sel' : '') + '" onclick="selPaciente(\'' + p.id + '\')">' +
-             '<div class="pac-av">' + iniciales(p.nombre) + '</div>' +
-             '<div style="min-width:0">' +
-               '<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.nombre) + '</div>' +
-               '<div style="font-size:10.5px;color:var(--gris-muted)">' + esc(p.diagnostico) + '</div>' +
-             '</div>' +
-           '</button>';
+    return '<div class="pac-row">' +
+      '<button class="pac-item' + (sel ? ' sel' : '') + '" onclick="selPaciente(\'' + p.id + '\')">' +
+        '<div class="pac-av">' + iniciales(p.nombre) + '</div>' +
+        '<div style="min-width:0">' +
+          '<div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(p.nombre) + '</div>' +
+          '<div style="font-size:10.5px;color:var(--gris-muted)">' + esc(p.diagnostico) + '</div>' +
+        '</div>' +
+      '</button>' +
+      '<button class="pac-del" title="Eliminar paciente" onclick="pedirBorrarPaciente(\'' + p.id + '\', \'' + esc(p.nombre) + '\')">&#128465;</button>' +
+    '</div>';
   }).join('');
+
+  cont.innerHTML = html;
 }
 
 function iniciales(nombre) {
@@ -1102,6 +1152,50 @@ function renderHistorial(pacienteId) {
       '</div>' +
     '</div>';
   }).join('');
+}
+
+function pedirBorrarPaciente(pacienteId, nombre) {
+  document.getElementById('modalMensaje').textContent =
+    'Esta accion eliminara al paciente ' + nombre + ' y TODAS sus consultas. No se puede deshacer.';
+  _accionPendiente = function() {
+    var pacs = getPacs().filter(function(p) { return p.id !== pacienteId; });
+    setPacs(pacs);
+    var cons = getCons().filter(function(c) { return c.pacienteId !== pacienteId; });
+    setCons(cons);
+    if (pacienteActivo && pacienteActivo.id === pacienteId) {
+      pacienteActivo = null;
+      document.getElementById('formConsulta').style.display = 'none';
+      document.getElementById('alertSelec').classList.add('show');
+    }
+    renderSidebar();
+    actualizarStats();
+    toast('Paciente eliminado');
+  };
+  document.getElementById('modalBorrar').classList.add('show');
+  document.getElementById('modalConfirmar').onclick = function() {
+    cerrarModal();
+    if (_accionPendiente) _accionPendiente();
+  };
+}
+
+function pedirBorrarTodosPac() {
+  document.getElementById('modalMensaje').textContent =
+    'Esta accion eliminara TODOS los pacientes y TODAS las consultas. No se puede deshacer.';
+  _accionPendiente = function() {
+    setPacs([]);
+    setCons([]);
+    pacienteActivo = null;
+    document.getElementById('formConsulta').style.display = 'none';
+    document.getElementById('alertSelec').classList.add('show');
+    renderSidebar();
+    actualizarStats();
+    toast('Todos los pacientes eliminados');
+  };
+  document.getElementById('modalBorrar').classList.add('show');
+  document.getElementById('modalConfirmar').onclick = function() {
+    cerrarModal();
+    if (_accionPendiente) _accionPendiente();
+  };
 }
 
 function pedirBorrarUna(consultaId) {
