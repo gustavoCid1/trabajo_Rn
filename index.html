@@ -415,10 +415,13 @@ body {
   border: 1px solid var(--gris-borde);
   border-left: 3px solid var(--azul-medio);
   border-radius: 9px;
-  padding: 1rem 1.25rem 3rem 1.25rem;
+  overflow: hidden;
   margin-bottom: 0.65rem;
-  position: relative;
   box-shadow: 0 1px 3px rgba(30,58,92,0.06);
+}
+
+.consulta-card-body {
+  padding: 1rem 1.25rem 0.85rem 1.25rem;
 }
 
 .con-meta {
@@ -457,8 +460,6 @@ body {
 }
 
 .badge-reciente {
-  position: absolute;
-  top: 9px; right: 10px;
   background: var(--azul);
   color: #fff;
   font-size: 9px;
@@ -467,22 +468,32 @@ body {
   text-transform: uppercase;
   padding: 2px 8px;
   border-radius: 20px;
+  margin-left: auto;
+}
+
+.consulta-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 1.25rem;
+  background: var(--rojo-claro);
+  border-top: 1px solid #f5c6c6;
 }
 
 .btn-borrar-consulta {
-  position: absolute;
-  bottom: 10px; right: 10px;
-  background: var(--rojo-claro);
+  background: none;
   color: var(--rojo);
-  border: 1.5px solid #f5c6c6;
+  border: 1.5px solid #e8a5a5;
   border-radius: 6px;
-  padding: 5px 13px;
+  padding: 5px 14px;
   font-family: 'Poppins', sans-serif;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 .btn-borrar-consulta:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
 
@@ -1070,21 +1081,25 @@ function renderHistorial(pacienteId) {
 
   cont.innerHTML = cons.map(function(c, i) {
     return '<div class="consulta-card">' +
-      (i === 0 ? '<span class="badge-reciente">Mas reciente</span>' : '') +
-      '<div class="con-meta">' +
-        '<span class="con-fecha">' + formatearFecha(c.fecha) + '</span>' +
-        '<span class="con-hora">' + esc(c.hora) + ' h</span>' +
-        '<span class="con-doc">' + esc(c.nutriologo) + '</span>' +
+      '<div class="consulta-card-body">' +
+        '<div class="con-meta">' +
+          '<span class="con-fecha">' + formatearFecha(c.fecha) + '</span>' +
+          '<span class="con-hora">' + esc(c.hora) + ' h</span>' +
+          '<span class="con-doc">' + esc(c.nutriologo) + '</span>' +
+          (i === 0 ? '<span class="badge-reciente">Mas reciente</span>' : '') +
+        '</div>' +
+        '<div class="con-sec">' +
+          '<div class="con-sec-ttl">Evolucion del paciente</div>' +
+          '<div class="con-sec-body">' + esc(c.evolucion) + '</div>' +
+        '</div>' +
+        '<div class="con-sec">' +
+          '<div class="con-sec-ttl">Plan de alimentacion</div>' +
+          '<div class="con-sec-body">' + esc(c.plan) + '</div>' +
+        '</div>' +
       '</div>' +
-      '<div class="con-sec">' +
-        '<div class="con-sec-ttl">Evolucion del paciente</div>' +
-        '<div class="con-sec-body">' + esc(c.evolucion) + '</div>' +
+      '<div class="consulta-card-footer">' +
+        '<button class="btn-borrar-consulta" onclick="pedirBorrarUna(\'' + c.id + '\')">&#128465; Borrar esta consulta</button>' +
       '</div>' +
-      '<div class="con-sec">' +
-        '<div class="con-sec-ttl">Plan de alimentacion</div>' +
-        '<div class="con-sec-body">' + esc(c.plan) + '</div>' +
-      '</div>' +
-      '<button class="btn-borrar-consulta" onclick="pedirBorrarUna(\'' + c.id + '\')">&#128465; Borrar esta consulta</button>' +
     '</div>';
   }).join('');
 }
